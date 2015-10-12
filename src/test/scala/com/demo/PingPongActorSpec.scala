@@ -1,4 +1,4 @@
-package com.gorkana
+package com.demo
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
