@@ -1,4 +1,4 @@
-package com.gorkana.domain
+package com.demo.domain
 
 case class Contact(
    Id: Long,

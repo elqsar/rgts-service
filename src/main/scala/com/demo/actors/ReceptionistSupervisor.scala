@@ -1,9 +1,11 @@
-package com.gorkana.actors
+package com.demo.actors
 
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
+import com.demo.messages.Messages
+import com.demo.messages.Messages.BreakMe
 import scala.concurrent.duration._
-import com.gorkana.messages.Messages._
+import Messages._
 
 class ReceptionistSupervisor extends Actor with ActorLogging {
   val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), "processorSupervisor")

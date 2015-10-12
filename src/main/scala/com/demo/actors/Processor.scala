@@ -1,8 +1,10 @@
-package com.gorkana.actors
+package com.demo.actors
 
 import akka.actor.{Props, Actor, ActorLogging}
-import com.gorkana.domain.Contact
-import com.gorkana.messages.Messages.RabbitMessage
+import com.demo.domain.Contact
+import com.demo.messages.Messages
+import Contact
+import Messages.RabbitMessage
 import org.json4s.jackson.JsonMethods._
 import org.json4s._
 

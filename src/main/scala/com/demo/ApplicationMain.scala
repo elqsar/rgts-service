@@ -1,7 +1,7 @@
-package com.gorkana
+package com.demo
 
 import akka.actor.ActorSystem
-import com.gorkana.actors.ReceptionistSupervisor
+import com.demo.actors.ReceptionistSupervisor
 import kamon.Kamon
 
 object ApplicationMain extends App {

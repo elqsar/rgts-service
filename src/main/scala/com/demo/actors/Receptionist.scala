@@ -1,7 +1,9 @@
-package com.gorkana.actors
+package com.demo.actors
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.gorkana.messages.Messages._
+import com.demo.messages.Messages
+import com.demo.messages.Messages.BreakMe
+import Messages._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.{Channel, ConnectionFactory, DefaultConsumer, Envelope}
 import com.thenewmotion.akka.rabbitmq.{ChannelActor, ConnectionActor, CreateChannel}

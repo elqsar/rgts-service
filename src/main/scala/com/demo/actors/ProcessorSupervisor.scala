@@ -1,8 +1,10 @@
-package com.gorkana.actors
+package com.demo.actors
 
 import akka.actor.{Props, Actor, ActorLogging}
 import akka.routing.RoundRobinPool
-import com.gorkana.messages.Messages._
+import com.demo.messages.Messages
+import com.demo.messages.Messages.RabbitMessage
+import Messages._
 
 class ProcessorSupervisor extends Actor with ActorLogging {
   val processor = context.actorOf(RoundRobinPool(4).props(Processor.props()), "processor")

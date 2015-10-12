@@ -1,4 +1,4 @@
-package com.gorkana.actors
+package com.demo.actors
 
 import akka.actor.{Actor, ActorLogging}
 

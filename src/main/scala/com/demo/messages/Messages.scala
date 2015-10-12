@@ -1,4 +1,4 @@
-package com.gorkana.messages
+package com.demo.messages
 
 object Messages {
   case object BreakMe
