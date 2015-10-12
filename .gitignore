@@ -4,6 +4,7 @@
 *.iws
 .buildpath
 target
+native
 
 # Mac
 .DS_Store
