@@ -1,0 +1,12 @@
+.idea/
+*.iml
+*.ipr
+*.iws
+.buildpath
+target
+
+# Mac
+.DS_Store
+
+# Other
+src/test/resources/application.conf
