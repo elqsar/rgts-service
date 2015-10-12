@@ -3,7 +3,6 @@ package com.demo.actors
 import akka.actor.{Props, Actor, ActorLogging}
 import com.demo.domain.Contact
 import com.demo.messages.Messages
-import Contact
 import Messages.RabbitMessage
 import org.json4s.jackson.JsonMethods._
 import org.json4s._

@@ -5,7 +5,7 @@ import com.demo.actors.ReceptionistSupervisor
 import kamon.Kamon
 
 object ApplicationMain extends App {
-  Kamon.start()
+  //Kamon.start()
 
   val system = ActorSystem("RGDS-system")
 
