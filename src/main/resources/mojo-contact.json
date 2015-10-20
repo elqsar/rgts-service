@@ -1,0 +1,125 @@
+{
+  "id": 516758,
+  "firstName": "John",
+  "lastName": "Harvey",
+  "firstNameAlias": "Jon, Jonathon, Johnathon",
+  "lastNameAlias1": "Harvy",
+  "profileType": {
+    "id": 1,
+    "name": "Journalist"
+  },
+  "language": "English",
+  "jobTitle": "Sports Editor",
+  "emailWork": "jharvey@vagazette.com",
+  "emailAlertPreference": "WORK",
+  "linkedinUrl": "https://www.linkedin.com/pub/john-harvey-iii/70/722/b0b",
+  "shortNote": "Oversees editorial content for the sports department with a focus on regional high school athletics. Best contacted by email.",
+  "addresses": [
+    {
+      "primary": true,
+      "branchName": "The Virginia Gazette",
+      "line1": "216 Ironbound Rd.",
+      "city": "Williamsburg",
+      "state": "VA",
+      "postcode": "23188",
+      "country": {
+        "id": 32,
+        "name": "United States"
+      },
+      "phone": "+1 (757) 345 2352"
+    }
+  ],
+  "biography": "<p><strong>Career: </strong><br />\n1999 - present - The Virginia Gazette, Sports Editor (April)<br />\n<br />\n<strong>Education:</strong><br />\n1997 - Virginia Commonwealth University, B.S. Mass Communication</p>",
+  "subscriptionTypes": [
+    {
+      "id": 32,
+      "name": "United States",
+      "countryId": 32
+    }
+  ],
+  "alerts": [
+    {
+      "id": 9,
+      "name": "US Job",
+      "location": "US",
+      "code": "N"
+    },
+    {
+      "id": 15,
+      "name": "US Consumer",
+      "location": "US",
+      "code": "I"
+    }
+  ],
+  "subscribedToAlerts": true,
+  "sectors": [
+    {
+      "id": 140,
+      "name": "Athletics"
+    },
+    {
+      "id": 63,
+      "name": "County, Town & Local Interest"
+    }
+  ],
+  "journalistTitles": [],
+  "prOpportunities": [],
+  "outlets": [
+    {
+      "id": 1288,
+      "name": "The Daily Telegraph",
+      "numberOfJournalists": 7370
+    },
+    {
+      "id": 124295,
+      "name": "The Virginia Gazette",
+      "numberOfJournalists": 7
+    },
+    {
+      "id": 223518,
+      "name": "Sports",
+      "numberOfJournalists": 1,
+      "parentId": 124295
+    },
+    {
+      "id": 307080,
+      "name": "monika test department",
+      "numberOfJournalists": 2,
+      "parentId": 1288
+    },
+    {
+      "id": 307082,
+      "name": "sub dept",
+      "numberOfJournalists": 1,
+      "parentId": 307080
+    }
+  ],
+  "lastUpdated": "2015-06-08T19:02:47Z",
+  "updatedBy": {
+    "id": 506,
+    "username": "howvol",
+    "firstName": "Howard",
+    "lastName": "Voletsky",
+    "active": true,
+    "jobTitle": "Media Executive",
+    "email": "Howard.Voletsky@gorkana.com",
+    "team": {
+      "id": 8,
+      "name": "US Team"
+    },
+    "country": {
+      "id": 32,
+      "name": "United States"
+    },
+    "permissions": {
+      "alerts": false,
+      "admin": false,
+      "prOpportunities": false,
+      "dataManagement": false
+    }
+  },
+  "owner": {
+    "id": 0,
+    "name": "Gorkana"
+  }
+}
