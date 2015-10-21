@@ -1,23 +1,19 @@
 package com.demo.actors.mapper
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{ActorRef, Actor, ActorLogging, Props}
 import com.demo.domain.MojoContactMapper
-import com.demo.messages.Messages.RdsReadyContact
+import com.demo.messages.Messages.{PostRequest, RdsReadyContact}
 
-class Mapper extends Actor with ActorLogging {
-
-  @throws[Exception](classOf[Exception])
-  override def preStart(): Unit = {
-    log.info("Starting new mappper")
-  }
+class Mapper(mojoApiSenderSupervisor: ActorRef) extends Actor with ActorLogging {
 
   override def receive: Receive = {
-    case RdsReadyContact(contact) =>
+    case RdsReadyContact(metadata, contact) =>
       val mojoContact = MojoContactMapper(contact).map()
       log.info("Received new contact: {}", mojoContact)
+      mojoApiSenderSupervisor ! PostRequest(metadata, mojoContact)
   }
 }
 
 object Mapper {
-  def props() = Props(new Mapper)
+  def props(mojoApiSenderSupervisor: ActorRef) = Props(new Mapper(mojoApiSenderSupervisor))
 }

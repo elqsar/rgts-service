@@ -2,9 +2,10 @@ package com.demo
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
 import com.demo.actors.processor.Processor
 import com.demo.domain.{Address, Communcation, Topics, Contact}
-import com.demo.messages.Messages.{RabbitMessage, RdsReadyContact}
+import com.demo.messages.Messages.{RabbitMetadata, RabbitMessage, RdsReadyContact}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 class ProcessorSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
@@ -87,13 +88,13 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
           |}
         """.stripMargin
 
-      val mediaType = "Contact"
-      val message = RabbitMessage(mediaType, body.getBytes("UTF-8"))
+      val metadata = RabbitMetadata(BatchQueue, "Contact", 1L)
+      val message = RabbitMessage(metadata, body.getBytes("UTF-8"))
 
       processor ! message
 
       val expectedMessage = Contact(2045883,974441,2900820,"Sergio",null,"UK1",null,null,"UK1 contact",List(),List(),Topics(90.0),"",null,null,1,Communcation("tester3@cision.com",null,null,null,null,null,null,"tester3@cision.com",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null),Address(null,null,"London","London",400,null,7,1,IsParentAddress = false),List(),List(),0,NotaPRcontactFlag = false)
-      probe.expectMsg(RdsReadyContact(expectedMessage))
+      probe.expectMsg(RdsReadyContact(metadata, expectedMessage))
     }
   }
 

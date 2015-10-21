@@ -12,18 +12,13 @@ class Processor(mapperSupervisor: ActorRef) extends Actor with ActorLogging {
 
   implicit val formats = DefaultFormats
 
-  @throws[Exception](classOf[Exception])
-  override def preStart(): Unit = {
-    log.info("Starting new processor")
-  }
-
   override def receive: Receive = {
-    case message@RabbitMessage(mediaType, body) =>
+    case message@RabbitMessage(metadata, body) =>
       val parsed = parse(new String(body, "UTF-8"))
       Try(parsed.extract[Contact]) match {
         case Success(contact) =>
           log.info("Get contact: {}", contact)
-          mapperSupervisor ! RdsReadyContact(contact)
+          mapperSupervisor ! RdsReadyContact(metadata, contact)
         case Failure(ex) =>
           log.info("Error: {}", ex.getCause)
       }
