@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 class ProcessorSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
 with WordSpecLike with Matchers with BeforeAndAfterAll {
 
-  def this() = this(ActorSystem("RGDS-system"))
+  def this() = this(ActorSystem("RGT-system"))
 
   override def afterAll() {
     TestKit.shutdownActorSystem(system)

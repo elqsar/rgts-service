@@ -24,24 +24,6 @@ class ConsumerSupervisor extends Actor with ActorLogging {
     case _: Exception => Restart
   }
 
-  def setupConsumer(queueName: String, queueType: RabbitQueue, supervisor: ActorRef): (Channel, ActorRef) => Any = {
-    def setupSubscriber(channel: Channel, self: ActorRef) = {
-      val consumer = new DefaultConsumer(channel) {
-        override def handleDelivery(consumerTag: String, envelope: Envelope, properties: BasicProperties, body: Array[Byte]): Unit = {
-          supervisor ! CreateRabbitMessage(consumerTag, envelope, properties, body, queueType)
-        }
-      }
-      channel.basicConsume(queueName, false, consumer)
-    }
-    setupSubscriber
-  }
-
-  def createRabbitMessage(envelope: Envelope, properties: BasicProperties, body: Array[Byte], queueType: RabbitQueue): RabbitMessage = {
-    val mediaType = properties.getHeaders.getOrDefault("x-cision-record-type", "Unknown").toString
-    val deliveryTag = envelope.getDeliveryTag
-    RabbitMessage(RabbitMetadata(queueType, mediaType, deliveryTag), body)
-  }
-
   override def receive: Receive = waiting()
 
   def consuming(rabbitConnection: ActorRef, batch: ActorRef, live: ActorRef): Receive = {
@@ -68,6 +50,24 @@ class ConsumerSupervisor extends Actor with ActorLogging {
       val live = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(liveQueueName, LiveQueue, self)), Some("liveConsumer"))
 
       context.become(consuming(rabbitConnection, batch, live))
+  }
+
+  def setupConsumer(queueName: String, queueType: RabbitQueue, supervisor: ActorRef): (Channel, ActorRef) => Any = {
+    def setupSubscriber(channel: Channel, self: ActorRef) = {
+      val consumer = new DefaultConsumer(channel) {
+        override def handleDelivery(consumerTag: String, envelope: Envelope, properties: BasicProperties, body: Array[Byte]): Unit = {
+          supervisor ! CreateRabbitMessage(consumerTag, envelope, properties, body, queueType)
+        }
+      }
+      channel.basicConsume(queueName, false, consumer)
+    }
+    setupSubscriber
+  }
+
+  def createRabbitMessage(envelope: Envelope, properties: BasicProperties, body: Array[Byte], queueType: RabbitQueue): RabbitMessage = {
+    val mediaType = properties.getHeaders.getOrDefault("x-cision-record-type", "Unknown").toString
+    val deliveryTag = envelope.getDeliveryTag
+    RabbitMessage(RabbitMetadata(queueType, mediaType, deliveryTag), body)
   }
 }
 
