@@ -5,7 +5,7 @@ import akka.actor._
 import com.demo.actors.consumer.ConsumerSupervisor._
 import com.demo.actors.processor.ProcessorSupervisor
 import com.demo.configuration.Configuration
-import com.demo.messages.Messages.{CreateRabbitMessage, RabbitMetadata, BreakMe, RabbitMessage}
+import com.demo.messages.Messages._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.{Channel, Envelope}
 import com.thenewmotion.akka.rabbitmq._
@@ -74,7 +74,6 @@ class ConsumerSupervisor extends Actor with ActorLogging {
 object ConsumerSupervisor {
   case object StopConsume
   case object StartConsume
-  case class ProcessAck(queue: RabbitQueue, deliveryTag: Long)
 
   trait RabbitQueue
   case object BatchQueue extends RabbitQueue

@@ -10,7 +10,7 @@ object Configuration {
 
   def liveQueueName() = config.getString("queue.live.name")
 
-  def apiBaseUrl() = "http://url.com"
+  def apiBaseUrl() = config.getString("api.baseUrl")
 
   def connectionFactory(): ConnectionFactory = {
     val connectionFactory = new ConnectionFactory()

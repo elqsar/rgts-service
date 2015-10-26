@@ -13,7 +13,7 @@ trait EndpointGuard {
       scheduler,
       maxFailures = 2,
       callTimeout = 20.seconds,
-      resetTimeout = 25.seconds
+      resetTimeout = 30.seconds
     )
       .onOpen(notifyCircuitBreakerOpen())
       .onHalfOpen(notifyCircuitBreakerHalfOpen())

@@ -7,7 +7,9 @@ import com.demo.actors.consumer.ConsumerSupervisor.{ProcessAck, StartConsume, St
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.sender.MojoApiSender.{CheckHealth, SuccessResponse}
 import com.demo.domain.MojoContact
-import com.demo.messages.Messages.{PostRequest, RabbitMetadata}
+import com.demo.messages.Messages.{ProcessAck, SuccessResponse, PostRequest, RabbitMetadata}
+import com.demo.webclient.WebClient
+import com.ning.http.client.Response
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -20,19 +22,29 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 
   override def receive: Receive = {
     case PostRequest(metadata, mojoContact) =>
-      breaker.withCircuitBreaker(sendData(metadata, mojoContact)) pipeTo self
+      breaker.withCircuitBreaker(sendData(metadata, mojoContact)).pipeTo(self)
     case SuccessResponse(metadata, response) =>
-      log.info("Success response")
+      log.info("Success response: " + response.getStatusCode)
       context.actorSelection(ActorRoutes.consumerSupervisor) ! ProcessAck(metadata.queueType, metadata.deliveryTag)
     case CheckHealth =>
-      log.info("Checking health")
+      checkHealth()
   }
 
   def sendData(metadata: RabbitMetadata, contact: MojoContact): Future[SuccessResponse] = {
-    val f = Future {
-      Thread.sleep(1000)
+    val f = WebClient.get("memo-types")
+    f.map { response =>
+      SuccessResponse(metadata, response)
+    }.recover {
+      case e: Throwable =>
+        throw new Exception()
     }
-    f.map(response => SuccessResponse(metadata, "Success"))
+  }
+
+  def checkHealth(): Unit = {
+    breaker.withCircuitBreaker(WebClient.get("http://localhost:3001/memo-types").recover {
+      case e: Throwable =>
+        throw new Exception()
+    })
   }
 
   override def notifyCircuitBreakerOpen(): Unit = {
@@ -46,15 +58,12 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
   }
 
   override def notifyCircuitBreakerHalfOpen(): Unit = {
-    // call GET /countries to check if database is alive
-    log.info("Context is {}: ", self)
+    log.info("Checking endpoint health")
     self ! CheckHealth
   }
 }
 
 object MojoApiSender {
-
-  case class SuccessResponse(metadat: RabbitMetadata, response: String)
   case object CheckHealth
 
   def props() = Props(new MojoApiSender)

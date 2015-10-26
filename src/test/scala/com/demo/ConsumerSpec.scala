@@ -6,7 +6,7 @@ import akka.actor.{Terminated, ActorRef, Props, ActorSystem}
 import akka.testkit.{TestActorRef, TestProbe, ImplicitSender, TestKit}
 import com.demo.actors.consumer.ConsumerSupervisor
 import com.demo.actors.consumer.ConsumerSupervisor._
-import com.demo.messages.Messages.{RabbitMetadata, RabbitMessage, CreateRabbitMessage}
+import com.demo.messages.Messages.{ProcessAck, RabbitMetadata, RabbitMessage, CreateRabbitMessage}
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.{Channel, Envelope}
 import com.thenewmotion.akka.rabbitmq.ChannelMessage
