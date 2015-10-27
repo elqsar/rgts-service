@@ -26,5 +26,7 @@ class OutletProcessor(mapperSupervisor: ActorRef) extends Actor with ActorLoggin
 }
 
 object OutletProcessor {
+  val name = "outletProcessor"
+
   def props(mapperSupervisor: ActorRef) = Props(new OutletProcessor(mapperSupervisor))
 }

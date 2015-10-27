@@ -62,8 +62,8 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 }
 
 object MojoApiSender {
-
   case object CheckHealth
+  val name = "mojoApiSender"
 
   def props() = Props(new MojoApiSender)
 }

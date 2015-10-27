@@ -17,7 +17,7 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   val liveQueueName = Configuration.liveQueueName()
   val batchQueueName = Configuration.batchQueueName()
 
-  val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), "processorSupervisor")
+  val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), ProcessorSupervisor.name)
 
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy(
     maxNrOfRetries = 5, withinTimeRange = 60.seconds) {

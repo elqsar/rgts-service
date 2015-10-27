@@ -26,6 +26,8 @@ class ContactProcessor(mapperSupervisor: ActorRef) extends Actor with ActorLoggi
 }
 
 object ContactProcessor {
+  val name = "contactProcessor"
+
   def props(mapperSupervisor: ActorRef) = Props(new ContactProcessor(mapperSupervisor))
 }
 

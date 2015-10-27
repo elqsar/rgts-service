@@ -15,5 +15,7 @@ class Mapper(mojoApiSenderSupervisor: ActorRef) extends Actor with ActorLogging 
 }
 
 object Mapper {
+  val name = "mapper"
+
   def props(mojoApiSenderSupervisor: ActorRef) = Props(new Mapper(mojoApiSenderSupervisor))
 }

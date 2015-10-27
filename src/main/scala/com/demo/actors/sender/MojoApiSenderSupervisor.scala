@@ -5,7 +5,7 @@ import com.demo.messages.Messages.PostContactRequest
 
 class MojoApiSenderSupervisor extends Actor with ActorLogging {
 
-  val mojoSender = context.actorOf(MojoApiSender.props())
+  val mojoSender = context.actorOf(MojoApiSender.props(), MojoApiSender.name)
 
   override def receive: Receive = {
     case message: PostContactRequest =>
@@ -14,5 +14,7 @@ class MojoApiSenderSupervisor extends Actor with ActorLogging {
 }
 
 object MojoApiSenderSupervisor {
+  val name = "mojoApiSenderSupervisor"
+
   def props() = Props(new MojoApiSenderSupervisor)
 }

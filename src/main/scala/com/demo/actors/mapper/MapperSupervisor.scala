@@ -6,8 +6,8 @@ import com.demo.messages.Messages.RdsReadyContact
 
 class MapperSupervisor extends Actor with ActorLogging {
 
-  val senderSupervisor = context.actorOf(MojoApiSenderSupervisor.props())
-  val mapper = context.actorOf(Mapper.props(senderSupervisor), "mapper")
+  val senderSupervisor = context.actorOf(MojoApiSenderSupervisor.props(), MojoApiSenderSupervisor.name)
+  val mapper = context.actorOf(Mapper.props(senderSupervisor), Mapper.name)
 
   override def receive: Receive = {
     case contact: RdsReadyContact =>
@@ -16,6 +16,8 @@ class MapperSupervisor extends Actor with ActorLogging {
 }
 
 object MapperSupervisor {
+  val name = "mapperSupervisor"
+
   def props() = Props(new MapperSupervisor)
 }
 
