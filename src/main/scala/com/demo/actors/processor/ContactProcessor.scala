@@ -8,12 +8,12 @@ import org.json4s.jackson.JsonMethods._
 
 import scala.util.{Failure, Success, Try}
 
-class Processor(mapperSupervisor: ActorRef) extends Actor with ActorLogging {
+class ContactProcessor(mapperSupervisor: ActorRef) extends Actor with ActorLogging {
 
   implicit val formats = DefaultFormats
 
   override def receive: Receive = {
-    case message@RabbitMessage(metadata, body) =>
+    case RabbitMessage(metadata, body) =>
       val parsed = parse(new String(body, "UTF-8"))
       Try(parsed.extract[Contact]) match {
         case Success(contact) =>
@@ -25,7 +25,7 @@ class Processor(mapperSupervisor: ActorRef) extends Actor with ActorLogging {
   }
 }
 
-object Processor {
-  def props(mapperSupervisor: ActorRef) = Props(new Processor(mapperSupervisor))
+object ContactProcessor {
+  def props(mapperSupervisor: ActorRef) = Props(new ContactProcessor(mapperSupervisor))
 }
 

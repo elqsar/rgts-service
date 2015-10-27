@@ -3,7 +3,7 @@ package com.demo
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
-import com.demo.actors.processor.Processor
+import com.demo.actors.processor.{ContactProcessor, ContactProcessor$}
 import com.demo.domain.{Address, Communcation, Topics, Contact}
 import com.demo.messages.Messages.{RabbitMetadata, RabbitMessage, RdsReadyContact}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -18,9 +18,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   }
 
   "A processor" must {
-    "parse json, map to object and send forward" in {
+    "parse json, map to RDS contact and send forward" in {
       val probe = TestProbe()
-      val processor = system.actorOf(Processor.props(probe.ref))
+      val processor = system.actorOf(ContactProcessor.props(probe.ref))
 
       val body =
         """
@@ -97,5 +97,4 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       probe.expectMsg(RdsReadyContact(metadata, expectedMessage))
     }
   }
-
 }

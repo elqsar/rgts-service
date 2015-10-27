@@ -9,7 +9,7 @@ import scala.concurrent.duration._
 
 class ProcessorSupervisor extends Actor with ActorLogging {
   val mapperSupervisor = context.actorOf(MapperSupervisor.props(), "mapperSupervisor")
-  val processor = context.actorOf(Processor.props(mapperSupervisor), "processor")
+  val contactProcessor = context.actorOf(ContactProcessor.props(mapperSupervisor), "processor")
 
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy(
     maxNrOfRetries = 10, withinTimeRange = 60.seconds) {
@@ -18,7 +18,10 @@ class ProcessorSupervisor extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case message: RabbitMessage =>
-      processor forward message
+      message.metadata.mediaType match {
+        case "Contact" => contactProcessor forward message
+        case "Outlet" => contactProcessor forward message
+      }
   }
 }
 

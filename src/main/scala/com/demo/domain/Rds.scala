@@ -74,3 +74,5 @@ case class Communcation(
                          Twitter: String,
                          YouTube: String
                          )
+
+case class Outlet(Id: Int)

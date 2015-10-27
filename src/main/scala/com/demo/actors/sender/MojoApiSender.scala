@@ -7,7 +7,7 @@ import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.sender.MojoApiSender.CheckHealth
 import com.demo.domain.MojoContact
-import com.demo.messages.Messages.{PostRequest, ProcessAck, RabbitMetadata, SuccessResponse}
+import com.demo.messages.Messages.{PostContactRequest, ProcessAck, RabbitMetadata, SuccessResponse}
 import com.demo.webclient.WebClient
 
 import scala.concurrent.Future
@@ -19,7 +19,7 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
   val breaker = createBreaker(context.system.scheduler)
 
   override def receive: Receive = {
-    case PostRequest(metadata, mojoContact) =>
+    case PostContactRequest(metadata, mojoContact) =>
       breaker.withCircuitBreaker(sendData(metadata, mojoContact)).pipeTo(self)
     case SuccessResponse(metadata, response) =>
       log.info("Success response: " + response.getStatusCode)
