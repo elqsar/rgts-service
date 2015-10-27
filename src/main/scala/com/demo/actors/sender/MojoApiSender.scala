@@ -1,18 +1,16 @@
 package com.demo.actors.sender
 
-import akka.actor.{ActorRef, Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
-import com.demo.actors.consumer.ConsumerSupervisor.{ProcessAck, StartConsume, StopConsume}
+import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
-import com.demo.actors.sender.MojoApiSender.{CheckHealth, SuccessResponse}
+import com.demo.actors.sender.MojoApiSender.CheckHealth
 import com.demo.domain.MojoContact
-import com.demo.messages.Messages.{ProcessAck, SuccessResponse, PostRequest, RabbitMetadata}
+import com.demo.messages.Messages.{PostRequest, ProcessAck, RabbitMetadata, SuccessResponse}
 import com.demo.webclient.WebClient
-import com.ning.http.client.Response
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 
@@ -64,6 +62,7 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 }
 
 object MojoApiSender {
+
   case object CheckHealth
 
   def props() = Props(new MojoApiSender)
