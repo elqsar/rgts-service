@@ -1,7 +1,9 @@
 package com.demo.messages
 
+
 import com.demo.actors.consumer.ConsumerSupervisor.RabbitQueue
-import com.demo.domain.{Outlet, MojoContact, Contact}
+import com.demo.domain.cision.{Outlet, Contact}
+import com.demo.domain.mojo.MojoContact
 import com.ning.http.client.Response
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.Envelope

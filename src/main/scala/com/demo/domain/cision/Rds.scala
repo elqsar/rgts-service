@@ -1,4 +1,4 @@
-package com.demo.domain
+package com.demo.domain.cision
 
 case class Contact(
                     Id: Long,
@@ -10,17 +10,17 @@ case class Contact(
                     NameSuffix: String,
                     Gender: String,
                     Title: String,
-                    ExternalIds: List[ExternalId],
-                    OutletExternalIds: List[OutletExternalId],
+                    ExternalIds: List[ExternalId] = List(),
+                    OutletExternalIds: List[OutletExternalId] = List(),
                     Topics: Topics,
                     Profile: String,
                     Salutation: String,
                     Biography: String,
                     Status: Long,
-                    Communcation: Communcation,
+                    Communication: Option[Communication] = Option empty,
                     Address: Address,
-                    Languages: List[Language],
-                    PreferredContactTypes: List[PreferredContactType],
+                    Languages: List[Language] = List(),
+                    PreferredContactTypes: List[PreferredContactType] = List(),
                     OptInType: Long,
                     NotaPRcontactFlag: Boolean
                     )
@@ -47,7 +47,7 @@ case class Address(
                     IsParentAddress: Boolean
                     )
 
-case class Communcation(
+case class Communication(
                          DefaultEmail: String,
                          AlternateEmail: String,
                          DefaultFax: String,
@@ -73,6 +73,13 @@ case class Communcation(
                          TollFreePhone: String,
                          Twitter: String,
                          YouTube: String
-                         )
+                         ) {
+  def this() = this(
+    null, null, null, null, null, null,
+    null, null, null, null, null, null,
+    null, null, null, null, null, null,
+    null, null, null, null, null, null, null)
+
+}
 
 case class Outlet(Id: Int)

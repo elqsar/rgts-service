@@ -1,7 +1,7 @@
 package com.demo.actors.processor
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.demo.domain.Outlet
+import com.demo.domain.cision.Outlet
 import com.demo.messages.Messages.{RabbitMessage, RdsReadyOutlet}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods._

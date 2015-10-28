@@ -1,7 +1,7 @@
 package com.demo.actors.processor
 
 import akka.actor.{ActorRef, Actor, ActorLogging, Props}
-import com.demo.domain._
+import com.demo.domain.cision.Contact
 import com.demo.messages.Messages.{RdsReadyContact, RabbitMessage}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._

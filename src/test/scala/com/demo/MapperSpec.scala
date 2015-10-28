@@ -1,6 +1,7 @@
 package com.demo
 
-import com.demo.domain.{MojoContactMapper, Contact}
+import com.demo.domain.cision.Contact
+import com.demo.domain.mojo.MojoContactMapper
 import org.scalatest.{Matchers, FlatSpec}
 
 class MapperSpec extends FlatSpec with Matchers {
@@ -23,17 +24,19 @@ class MapperSpec extends FlatSpec with Matchers {
       Salutation = "Hello",
       Biography = "The biography",
       Status = 1,
-      Communcation = null,
+      Communication = Option empty,
       Address = null,
       Languages = null,
       PreferredContactTypes = null,
       OptInType = 1,
       NotaPRcontactFlag = false
     )
-    val result = MojoContactMapper(rdsContact).map()
+    val result = MojoContactMapper(rdsContact)
 
-    result.name should be ("John")
-    result.id should be (1)
+    result.firstName should be ("John")
+    result.lastName should be ("Doe")
+    result
+    result.rdsId should be (1)
   }
 
 }

@@ -6,7 +6,7 @@ import com.demo.actors.breaker.EndpointGuard
 import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.sender.MojoApiSender.CheckHealth
-import com.demo.domain.MojoContact
+import com.demo.domain.mojo.MojoContact
 import com.demo.messages.Messages.{PostContactRequest, ProcessAck, RabbitMetadata, SuccessResponse}
 import com.demo.webclient.WebClient
 
