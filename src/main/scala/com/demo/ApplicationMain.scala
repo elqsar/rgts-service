@@ -9,6 +9,6 @@ object ApplicationMain extends App {
 
   val system = ActorSystem("RGT-system")
 
-  val consumerSupervisor = system.actorOf(ConsumerSupervisor.props(), "consumerSupervisor")
+  val consumerSupervisor = system.actorOf(ConsumerSupervisor.props(), ConsumerSupervisor.name)
   consumerSupervisor ! StartConsume
 }

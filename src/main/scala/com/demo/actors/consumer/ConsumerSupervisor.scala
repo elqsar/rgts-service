@@ -79,5 +79,7 @@ object ConsumerSupervisor {
   case object BatchQueue extends RabbitQueue
   case object LiveQueue extends RabbitQueue
 
+  val name = "consumerSupervisor"
+
   def props() = Props(new ConsumerSupervisor)
 }
