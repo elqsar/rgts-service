@@ -1,16 +1,16 @@
 package com.demo
 
-import java.util
-
-import akka.actor.{Terminated, ActorRef, Props, ActorSystem}
-import akka.testkit.{TestActorRef, TestProbe, ImplicitSender, TestKit}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.demo.actors.consumer.ConsumerSupervisor
 import com.demo.actors.consumer.ConsumerSupervisor._
-import com.demo.messages.Messages.{ProcessAck, RabbitMetadata, RabbitMessage, CreateRabbitMessage}
+import com.demo.messages.Messages.{CreateRabbitMessage, ProcessAck, RabbitMessage, RabbitMetadata}
 import com.rabbitmq.client.AMQP.BasicProperties
-import com.rabbitmq.client.{Channel, Envelope}
+import com.rabbitmq.client.Envelope
 import com.thenewmotion.akka.rabbitmq.ChannelMessage
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+
+import scala.collection.JavaConversions.mapAsJavaMap
 
 class ConsumerSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
 with WordSpecLike with Matchers with BeforeAndAfterAll {
@@ -29,9 +29,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       }))
       val envelope = new Envelope(1L, false, "", "")
       val properties = new BasicProperties()
-      val map = new util.HashMap[String, Object]()
-      map.put("x-cision-record-type", "Contact")
-      properties.setHeaders(map)
+      properties.setHeaders(Map("x-cision-record-type" -> "Contact"))
       val body =
         """
           |{

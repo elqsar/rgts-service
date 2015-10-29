@@ -12,6 +12,13 @@ class OutletProcessor(mapperSupervisor: ActorRef) extends Actor with ActorLoggin
 
   implicit val formats = DefaultFormats
 
+
+  @throws[Exception](classOf[Exception])
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+    super.preRestart(reason, message)
+    // here we'll should take care about message what crash the actor
+  }
+
   override def receive: Receive = {
     case RabbitMessage(metadata, body) =>
       val parsed = parse(new String(body, "UTF-8"))

@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 trait EndpointGuard {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def createBreaker(scheduler: Scheduler): CircuitBreaker = {
+  def createCircuitBreaker(scheduler: Scheduler): CircuitBreaker = {
     val breaker = new CircuitBreaker(
       scheduler,
       maxFailures = 2,

@@ -20,8 +20,8 @@ object Messages {
   case class MojoReadyContact(contact: MojoContact)
   case class MojoReadyOutlet(outlet: Outlet)
 
-  case class GetOutletRequest(url: String, id: String)
-  case class GetContactRequest(url: String, id: String)
+  case class GetOutletRequest(id: Long, metadata: RabbitMetadata)
+  case class GetContactRequest(id: Long, metadata: RabbitMetadata)
 
   case class PostContactRequest(metadata: RabbitMetadata, contact: MojoContact)
   case class PostOutletRequest(metadata: RabbitMetadata, outlet: Outlet)

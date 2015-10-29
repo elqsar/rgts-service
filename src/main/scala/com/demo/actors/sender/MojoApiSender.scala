@@ -16,7 +16,7 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 
   implicit val exec = context.dispatcher
 
-  val breaker = createBreaker(context.system.scheduler)
+  val breaker = createCircuitBreaker(context.system.scheduler)
 
   override def receive: Receive = {
     case PostContactRequest(metadata, mojoContact) =>
