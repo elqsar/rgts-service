@@ -11,8 +11,8 @@ trait EndpointGuard {
   def createCircuitBreaker(scheduler: Scheduler): CircuitBreaker = {
     val breaker = new CircuitBreaker(
       scheduler,
-      maxFailures = 2,
-      callTimeout = 20.seconds,
+      maxFailures = 10,
+      callTimeout = 1.minute,
       resetTimeout = 30.seconds
     )
       .onOpen(notifyCircuitBreakerOpen())

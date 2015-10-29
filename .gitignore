@@ -11,3 +11,6 @@ native
 
 # Other
 src/test/resources/application.conf
+project/typesafe.properties
+project/project/typesafe.sbt
+project/project/

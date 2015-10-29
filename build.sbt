@@ -5,12 +5,13 @@ version := "1.0"
 scalaVersion := "2.11.6"
 
 // Bring the sbt-aspectj settings into this build
-aspectjSettings
+// aspectjSettings
 
 // Here we are effectively adding the `-javaagent` JVM startup
 // option with the location of the AspectJ Weaver provided by
 // the sbt-aspectj plugin.
-javaOptions in run <++= AspectjKeys.weaverOptions in Aspectj
+// javaOptions in run <++= AspectjKeys.weaverOptions in Aspectj
+javaOptions in run += "-agentlib:TakipiAgent"
 
 // We need to ensure that the JVM is forked for the
 // AspectJ Weaver to kick in properly and do it's magic.
@@ -30,6 +31,7 @@ libraryDependencies ++= Seq(
 //  "io.kamon" %% "kamon-log-reporter" % "0.5.2",
 //  "io.kamon" %% "kamon-system-metrics" % "0.5.2",
 //  "org.aspectj" % "aspectjweaver" % "1.8.5",
+  "com.typesafe.cinnamon" %% "cinnamon-takipi" % "0.2.1",
   "com.typesafe.akka" %% "akka-testkit" % "2.3.11" % "test",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test")
 

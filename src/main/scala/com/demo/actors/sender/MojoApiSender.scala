@@ -5,15 +5,13 @@ import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
 import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
-import com.demo.actors.sender.MojoApiSender.CheckHealth
-import com.demo.domain.mojo.MojoContact
-import com.demo.messages.Messages.{PostContactRequest, ProcessAck, RabbitMetadata, SuccessResponse}
+import com.demo.domain.MojoContact
+import com.demo.messages.Messages._
 import com.demo.webclient.WebClient
 
 import scala.concurrent.Future
 
 class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
-
   implicit val exec = context.dispatcher
 
   val breaker = createCircuitBreaker(context.system.scheduler)
@@ -22,14 +20,15 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
     case PostContactRequest(metadata, mojoContact) =>
       breaker.withCircuitBreaker(sendData(metadata, mojoContact)).pipeTo(self)
     case SuccessResponse(metadata, response) =>
-      log.info("Success response: " + response.getStatusCode)
+      log.info("Success response: {} with tag: {}", response.getStatusCode, metadata.deliveryTag )
       context.actorSelection(ActorRoutes.consumerSupervisor) ! ProcessAck(metadata.queueType, metadata.deliveryTag)
     case CheckHealth =>
       checkHealth()
   }
 
   def sendData(metadata: RabbitMetadata, contact: MojoContact): Future[SuccessResponse] = {
-    val f = WebClient.get("memo-types")
+    log.info("Sending data to API: {}", metadata.deliveryTag)
+    val f = WebClient.get("journalists/516758")
     f.map { response =>
       SuccessResponse(metadata, response)
     }.recover {
@@ -39,7 +38,7 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
   }
 
   def checkHealth(): Unit = {
-    breaker.withCircuitBreaker(WebClient.get("http://localhost:3001/memo-types").recover {
+    breaker.withCircuitBreaker(WebClient.get("memo-types").recover {
       case e: Throwable =>
         throw new Exception()
     })
@@ -62,7 +61,6 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
 }
 
 object MojoApiSender {
-  case object CheckHealth
   val name = "mojoApiSender"
 
   def props() = Props(new MojoApiSender)

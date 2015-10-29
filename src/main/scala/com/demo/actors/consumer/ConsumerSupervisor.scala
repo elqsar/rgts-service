@@ -17,6 +17,8 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   val liveQueueName = Configuration.liveQueueName()
   val batchQueueName = Configuration.batchQueueName()
 
+  val rabbitFetchSize = 30
+
   val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), ProcessorSupervisor.name)
 
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy(
@@ -34,8 +36,8 @@ class ConsumerSupervisor extends Actor with ActorLogging {
     case ProcessAck(queueType, deliveryTag) =>
       def publishAck(channel: Channel) = channel.basicAck(deliveryTag, false)
       queueType match {
-        case BatchQueue => batch ! ChannelMessage(publishAck)
-        case LiveQueue => live ! ChannelMessage(publishAck)
+        case BatchQueue => batch ! ChannelMessage(publishAck, dropIfNoChannel = false)
+        case LiveQueue => live ! ChannelMessage(publishAck, dropIfNoChannel = false)
       }
 
     case CreateRabbitMessage(_, envelope, properties, body, queueType) =>
@@ -45,9 +47,9 @@ class ConsumerSupervisor extends Actor with ActorLogging {
 
   def waiting(): Receive = {
     case StartConsume =>
-      val rabbitConnection = context.actorOf(ConnectionActor.props(connectionFactory), "rabbitConnection")
-      val batch = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(batchQueueName, BatchQueue, self)), Some("batchConsumer"))
-      val live = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(liveQueueName, LiveQueue, self)), Some("liveConsumer"))
+      val rabbitConnection = context.actorOf(ConnectionActor.props(connectionFactory).withDispatcher("rabbit"), "rabbitConnection")
+      val batch = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(batchQueueName, BatchQueue, self)).withDispatcher("rabbit"), Some("batchConsumer"))
+      val live = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(liveQueueName, LiveQueue, self)).withDispatcher("rabbit"), Some("liveConsumer"))
 
       context.become(consuming(rabbitConnection, batch, live))
   }
@@ -59,6 +61,7 @@ class ConsumerSupervisor extends Actor with ActorLogging {
           supervisor ! CreateRabbitMessage(consumerTag, envelope, properties, body, queueType)
         }
       }
+      channel.basicQos(rabbitFetchSize)
       channel.basicConsume(queueName, false, consumer)
     }
     setupSubscriber

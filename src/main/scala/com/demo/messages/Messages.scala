@@ -27,4 +27,6 @@ object Messages {
   case class PostOutletRequest(metadata: RabbitMetadata, outlet: Outlet)
 
   case class SuccessResponse(metadata: RabbitMetadata, response: Response)
+
+  case object CheckHealth
 }
