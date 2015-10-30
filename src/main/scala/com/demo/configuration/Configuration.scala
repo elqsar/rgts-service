@@ -12,6 +12,8 @@ object Configuration {
 
   def apiBaseUrl() = config.getString("api.baseUrl")
 
+  def prefetchSize() = config.getInt("rabbit.qos")
+
   def connectionFactory(): ConnectionFactory = {
     val connectionFactory = new ConnectionFactory()
     connectionFactory.setHost(config.getString("rabbit.connection.host"))

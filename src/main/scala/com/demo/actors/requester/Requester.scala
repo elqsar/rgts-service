@@ -3,7 +3,7 @@ package com.demo.actors.requester
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
-import com.demo.actors.requester.Requester.SuccessContact
+import com.demo.actors.requester.Requester.{SuccessOutlet, SuccessContact}
 import com.demo.actors.sender.exceptions.MojoApiException
 import com.demo.messages.Messages.{GetContactRequest, GetOutletRequest, RabbitMetadata}
 import com.demo.webclient.WebClient
@@ -11,23 +11,24 @@ import com.demo.webclient.WebClient
 import scala.concurrent.Future
 
 class Requester extends Actor with ActorLogging with EndpointGuard {
-
   val breaker = createCircuitBreaker(context.system.scheduler)
+  val outletsUrl = "outlets"
+  val contactUrl = "journalists"
 
   implicit val exec = context.dispatcher
 
   override def receive: Receive = {
     case GetOutletRequest(id, metadata) =>
-      breaker.withCircuitBreaker(getOutlet(createUrl("outlets", id), metadata)).pipeTo(sender())
+      breaker.withCircuitBreaker(getOutlet(createUrl(outletsUrl, id), metadata)).pipeTo(sender())
 
     case GetContactRequest(id, metadata) =>
-      breaker.withCircuitBreaker(getContact(createUrl("journalists", id), metadata)).pipeTo(sender())
+      breaker.withCircuitBreaker(getContact(createUrl(contactUrl, id), metadata)).pipeTo(sender())
   }
 
-  def getOutlet(url: String, metadata: RabbitMetadata): Future[SuccessContact] = {
+  def getOutlet(url: String, metadata: RabbitMetadata): Future[SuccessOutlet] = {
     val future = WebClient.get(url)
 
-    future.map(response => SuccessContact(response.getStatusCode, response.getResponseBodyAsBytes)) recover {
+    future.map(response => SuccessOutlet(metadata, response.getResponseBodyAsBytes)) recover {
       case t: Throwable => throw MojoApiException(t.getMessage)
     }
   }
@@ -35,7 +36,7 @@ class Requester extends Actor with ActorLogging with EndpointGuard {
   def getContact(url: String, metadata: RabbitMetadata): Future[SuccessContact] = {
     val future = WebClient.get(url)
 
-    future.map(response => SuccessContact(response.getStatusCode, response.getResponseBodyAsBytes)) recover {
+    future.map(response => SuccessContact(metadata, response.getResponseBodyAsBytes)) recover {
       case t: Throwable => throw MojoApiException(t.getMessage)
     }
   }
@@ -58,7 +59,8 @@ class Requester extends Actor with ActorLogging with EndpointGuard {
 object Requester {
   val name = "requester"
 
-  case class SuccessContact(statusCode: Int, body: Array[Byte])
+  case class SuccessContact(metadata: RabbitMetadata, body: Array[Byte])
+  case class SuccessOutlet(metadata: RabbitMetadata, body: Array[Byte])
 
   def props() = Props(new Requester)
 }

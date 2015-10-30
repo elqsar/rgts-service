@@ -16,8 +16,7 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   val connectionFactory = Configuration.connectionFactory()
   val liveQueueName = Configuration.liveQueueName()
   val batchQueueName = Configuration.batchQueueName()
-
-  val rabbitFetchSize = 30
+  val rabbitFetchSize = Configuration.prefetchSize()
 
   val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), ProcessorSupervisor.name)
 
@@ -31,6 +30,8 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   def consuming(rabbitConnection: ActorRef, batch: ActorRef, live: ActorRef): Receive = {
     case StopConsume =>
       context.stop(rabbitConnection)
+      context.stop(batch)
+      context.stop(live)
       context.unbecome()
 
     case ProcessAck(queueType, deliveryTag) =>
@@ -47,7 +48,7 @@ class ConsumerSupervisor extends Actor with ActorLogging {
 
   def waiting(): Receive = {
     case StartConsume =>
-      val rabbitConnection = context.actorOf(ConnectionActor.props(connectionFactory).withDispatcher("rabbit"), "rabbitConnection")
+      val rabbitConnection = context.actorOf(ConnectionActor.props(connectionFactory).withDispatcher("consumer"), "rabbitConnection")
       val batch = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(batchQueueName, BatchQueue, self)).withDispatcher("rabbit"), Some("batchConsumer"))
       val live = rabbitConnection.createChannel(ChannelActor.props(setupConsumer(liveQueueName, LiveQueue, self)).withDispatcher("rabbit"), Some("liveConsumer"))
 

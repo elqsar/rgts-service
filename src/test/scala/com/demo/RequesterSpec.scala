@@ -4,8 +4,8 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
 import com.demo.actors.requester.Requester
-import com.demo.actors.requester.Requester.SuccessContact
-import com.demo.messages.Messages.{GetContactRequest, RabbitMetadata}
+import com.demo.actors.requester.Requester.{SuccessOutlet, SuccessContact}
+import com.demo.messages.Messages.{GetOutletRequest, GetContactRequest, RabbitMetadata}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.Future
@@ -23,15 +23,34 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     "return Contact to sender" in {
       val requester = system.actorOf(Props(new Requester {
         override def getContact(url: String, metadata: RabbitMetadata): Future[SuccessContact] = {
-          Future.successful(SuccessContact(200, "Success".getBytes))
+          Future.successful(SuccessContact(metadata, "Success".getBytes))
         }
       }))
+      val metadata = RabbitMetadata(BatchQueue, "Contact", 1L)
 
-      requester ! GetContactRequest(1L, RabbitMetadata(BatchQueue, "Contact", 1L))
+      requester ! GetContactRequest(1L, metadata)
 
       val response = expectMsgType[SuccessContact]
 
-      response.statusCode should be(200)
+      response.metadata should be(metadata)
+      response.body should be("Success".getBytes)
+    }
+  }
+
+  "A requester" must {
+    "return Outlet to sender" in {
+      val requester = system.actorOf(Props(new Requester {
+        override def getOutlet(url: String, metadata: RabbitMetadata): Future[SuccessOutlet] = {
+          Future.successful(SuccessOutlet(metadata, "Success".getBytes))
+        }
+      }))
+      val metadata = RabbitMetadata(BatchQueue, "Outlet", 1L)
+
+      requester ! GetOutletRequest(1L, metadata)
+
+      val response = expectMsgType[SuccessOutlet]
+
+      response.metadata should be(metadata)
       response.body should be("Success".getBytes)
     }
   }

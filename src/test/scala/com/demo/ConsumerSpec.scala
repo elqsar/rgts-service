@@ -49,6 +49,29 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   }
 
   "A consumer" must {
+    "stop consume and stop rabbit connection and channels" in {
+      val probe = TestProbe()
+      val batchProbe = TestProbe()
+      val liveProbe = TestProbe()
+      val connection = TestProbe()
+      val consumer = TestActorRef(Props(new ConsumerSupervisor {
+        override def consuming(rabbitConnection: ActorRef, batch: ActorRef, live: ActorRef): Receive = super.consuming(connection.ref, batchProbe.ref, liveProbe.ref)
+      }))
+
+      probe.watch(connection.ref)
+      probe.watch(batchProbe.ref)
+      probe.watch(liveProbe.ref)
+
+      consumer ! StartConsume
+      consumer ! StopConsume
+
+      probe.expectTerminated(connection.ref)
+      probe.expectTerminated(batchProbe.ref)
+      probe.expectTerminated(liveProbe.ref)
+    }
+  }
+
+  "A consumer" must {
     "process acknowledge properly by queue type" in {
       val batchProbe = TestProbe()
       val liveProbe = TestProbe()
@@ -58,8 +81,8 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       }))
 
       consumer ! StartConsume
-      consumer ! ProcessAck(BatchQueue, 1L)
 
+      consumer ! ProcessAck(BatchQueue, 1L)
       batchProbe.expectMsgType[ChannelMessage]
       liveProbe.expectNoMsg()
 
