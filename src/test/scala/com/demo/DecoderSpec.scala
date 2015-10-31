@@ -3,13 +3,11 @@ package com.demo
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
-import com.demo.actors.processor.Processor
+import com.demo.actors.processor.Decoder
 import com.demo.messages.Messages._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
 
-class ProcessorSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
+class DecoderSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   def this() = this(ActorSystem("RGT-system"))
@@ -18,55 +16,38 @@ class ProcessorSpec(_system: ActorSystem) extends TestKit(_system) with Implicit
     TestKit.shutdownActorSystem(system)
   }
 
-  "A processor" must {
-    "map to RDS contact and send forward" in {
-      val probe = TestProbe()
-      val processor = system.actorOf(Processor.props(probe.ref))
+  "A decoder" must {
+    "decode contact properly" in {
+      val processor = TestProbe()
+      val decoder = system.actorOf(Decoder.props(processor.ref))
 
       val metadata = RabbitMetadata(BatchQueue, "Contact", 1L)
-      val json = createContactJson()
-      val message = ProcessContact(metadata, json)
+      val body = createByteBody()
+      val message: RabbitMessage = RabbitMessageContact(metadata, body)
 
-      processor ! message
+      decoder ! message
 
-      val result = probe.expectMsgType[RdsReadyContact]
-
-      result.contact.Id should be (2045883)
+      processor.expectMsgType[ProcessContact]
     }
   }
 
-  "A processor" must {
-    "map to RDS outlet and send forward" in {
-      val probe = TestProbe()
-      val processor = system.actorOf(Processor.props(probe.ref))
+  "A decoder" must {
+    "decode outlet properly" in {
+      val processor = TestProbe()
+      val decoder = system.actorOf(Decoder.props(processor.ref))
 
-      val metadata = RabbitMetadata(BatchQueue, "Outlet", 1L)
-      val json = createOutletJson()
-      val message = ProcessOutlet(metadata, json)
+      val metadata = RabbitMetadata(BatchQueue, "Contact", 1L)
+      val body = createByteBody()
+      val message: RabbitMessage = RabbitMessageOutlet(metadata, body)
 
-      processor ! message
+      decoder ! message
 
-      val result = probe.expectMsgType[RdsReadyOutlet]
-
-      result.outlet.Id should be (1)
+      processor.expectMsgType[ProcessOutlet]
     }
   }
 
-  def createOutletJson(): JValue = {
-    implicit val formats = DefaultFormats
-
-    parse(
-      """
-        |{
-        | "Id": 1
-        |}
-      """.stripMargin)
-  }
-
-  def createContactJson(): JValue = {
-    implicit val formats = DefaultFormats
-
-    parse("""
+  def createByteBody(): Array[Byte] = {
+    """
       |{
       |  "Id": 2045883,
       |  "OutletId": 974441,
@@ -129,6 +110,7 @@ class ProcessorSpec(_system: ActorSystem) extends TestKit(_system) with Implicit
       |  "OptInType": 0,
       |  "NotaPRcontactFlag": false
       |}
-    """.stripMargin)
+    """.stripMargin.getBytes("UTF-8")
   }
+
 }

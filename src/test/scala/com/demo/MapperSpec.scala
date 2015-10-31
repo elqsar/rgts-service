@@ -35,7 +35,6 @@ class MapperSpec extends FlatSpec with Matchers {
 
     result.firstName should be ("John")
     result.lastName should be ("Doe")
-    result
     result.rdsId should be (1)
   }
 

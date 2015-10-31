@@ -5,6 +5,7 @@ import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
 import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
+import com.demo.actors.sender.exceptions.MojoApiException
 import com.demo.domain.mojo.MojoContact
 import com.demo.messages.Messages._
 import com.demo.webclient.WebClient
@@ -15,25 +16,43 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
   implicit val exec = context.dispatcher
 
   val breaker = createCircuitBreaker(context.system.scheduler)
+  val consumer = context.actorSelection(ActorRoutes.consumerSupervisor)
 
   override def receive: Receive = {
-    case PostContactRequest(metadata, mojoContact) =>
-      breaker.withCircuitBreaker(sendData(metadata, mojoContact)).pipeTo(self)
+    case PostContactRequest(id, metadata, mojoContact) =>
+      breaker.withCircuitBreaker(postContact(id, metadata, mojoContact)).pipeTo(self)
+    case PostOutletRequest(id, metadata, mojoOutlet) =>
+
     case SuccessResponse(metadata, response) =>
-      log.info("Success response: {} with tag: {}", response.getStatusCode, metadata.deliveryTag )
-      context.actorSelection(ActorRoutes.consumerSupervisor) ! ProcessAck(metadata.queueType, metadata.deliveryTag)
+      log.info("Success response: {} with tag: {}", response.getStatusCode, metadata.deliveryTag)
+      consumer ! ProcessAck(metadata.queueType, metadata.deliveryTag)
+    case FailedResponse(metadata, response) =>
+      log.info("Failed response: {} with tag: {}", response.getStatusCode, metadata.deliveryTag)
     case CheckHealth =>
       checkHealth()
   }
 
-  def sendData(metadata: RabbitMetadata, contact: MojoContact): Future[SuccessResponse] = {
-    log.info("Sending data to API: {}", metadata.deliveryTag)
-    val f = WebClient.get("journalists/516758")
-    f.map { response =>
+  def postContact(id: Long, metadata: RabbitMetadata, content: String): Future[SuccessResponse] = {
+    log.info("POST MOJO contact: {}", content)
+    val future = WebClient.post(s"journalists/$id", content)
+    future.map { response =>
       SuccessResponse(metadata, response)
     }.recover {
       case e: Throwable =>
-        throw new Exception()
+        log.info("API Error: {}", e.getMessage)
+        throw MojoApiException(e.getMessage)
+    }
+  }
+
+  def putContact(id: Long, metadata: RabbitMetadata, content: String): Future[SuccessResponse] = {
+    log.info("OUT MOJO contact: {}", content)
+    val future = WebClient.post(s"journalists/$id", content)
+    future.map { response =>
+      SuccessResponse(metadata, response)
+    }.recover {
+      case e: Throwable =>
+        log.info("API Error: {}", e.getMessage)
+        throw MojoApiException(e.getMessage)
     }
   }
 

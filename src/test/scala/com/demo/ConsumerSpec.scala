@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import com.demo.actors.consumer.ConsumerSupervisor
 import com.demo.actors.consumer.ConsumerSupervisor._
-import com.demo.messages.Messages.{CreateRabbitMessage, ProcessAck, RabbitMessage, RabbitMetadata}
+import com.demo.messages.Messages._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.Envelope
 import com.thenewmotion.akka.rabbitmq.ChannelMessage
@@ -43,7 +43,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       consumer ! StartConsume
       consumer ! message
 
-      val expectedMessage = RabbitMessage(RabbitMetadata(BatchQueue, "Contact", 1L), body)
+      val expectedMessage = RabbitMessageContact(RabbitMetadata(BatchQueue, "Contact", 1L), body)
       probe.expectMsg(expectedMessage)
     }
   }

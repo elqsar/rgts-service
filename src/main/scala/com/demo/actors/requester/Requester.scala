@@ -11,11 +11,11 @@ import com.demo.webclient.WebClient
 import scala.concurrent.Future
 
 class Requester extends Actor with ActorLogging with EndpointGuard {
+  implicit val exec = context.dispatcher
+
   val breaker = createCircuitBreaker(context.system.scheduler)
   val outletsUrl = "outlets"
   val contactUrl = "journalists"
-
-  implicit val exec = context.dispatcher
 
   override def receive: Receive = {
     case GetOutletRequest(id, metadata) =>

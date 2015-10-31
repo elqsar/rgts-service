@@ -71,7 +71,13 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   def createRabbitMessage(envelope: Envelope, properties: BasicProperties, body: Array[Byte], queueType: RabbitQueue): RabbitMessage = {
     val mediaType = properties.getHeaders.getOrDefault("x-cision-record-type", "Unknown").toString
     val deliveryTag = envelope.getDeliveryTag
-    RabbitMessage(RabbitMetadata(queueType, mediaType, deliveryTag), body)
+    val metadata = RabbitMetadata(queueType, mediaType, deliveryTag)
+
+    log.info("Message type is: {}", mediaType)
+    mediaType match {
+      case "Contact" => RabbitMessageContact(metadata, body)
+      case "Outlet" => RabbitMessageOutlet(metadata, body)
+    }
   }
 }
 

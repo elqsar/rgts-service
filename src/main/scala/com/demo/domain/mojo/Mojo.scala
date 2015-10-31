@@ -5,7 +5,7 @@ import com.demo.domain.cision.{Communication, Contact}
 case class MojoContact( rdsId: Long,
                         id: Long,
                         rdsOutletId: Long,
-                        outlets: List[Outlet],
+                        outlets: List[MojoOutlet],
                         firstName: String,
                         lastName: String,
                         title: String,
@@ -39,7 +39,7 @@ case class MojoCountry (id: Long)
 
 case class Sector (id: Long)
 
-case class Outlet (id: Long)
+case class MojoOutlet (id: Long)
 
 class MojoContactMapper(contact: Contact) {
 

@@ -2,7 +2,7 @@ package com.demo.actors.mapper
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.demo.domain.mojo.MojoContactMapper
-import com.demo.messages.Messages.{PostContactRequest, RdsReadyContact}
+import com.demo.messages.Messages.{EncodeContact, PostContactRequest, RdsReadyContact}
 
 class Mapper(mojoApiSenderSupervisor: ActorRef) extends Actor with ActorLogging {
 
@@ -10,7 +10,7 @@ class Mapper(mojoApiSenderSupervisor: ActorRef) extends Actor with ActorLogging 
     case RdsReadyContact(metadata, contact) =>
       val mojoContact = MojoContactMapper(contact)
       log.info("Received new contact: {}", mojoContact)
-      mojoApiSenderSupervisor ! PostContactRequest(metadata, mojoContact)
+      mojoApiSenderSupervisor ! EncodeContact(metadata, mojoContact)
   }
 }
 

@@ -3,6 +3,7 @@ package com.demo
 import akka.actor.{DeadLetter, ActorSystem}
 import com.demo.actors.consumer.ConsumerSupervisor
 import com.demo.actors.consumer.ConsumerSupervisor.{StopConsume, StartConsume}
+import com.demo.actors.statistics.StatisticsSupervisor
 import com.demo.actors.system.DeadLettersChecker
 
 object ApplicationMain extends App {
@@ -11,6 +12,7 @@ object ApplicationMain extends App {
   val system = ActorSystem("RGT-system")
 
   val consumerSupervisor = system.actorOf(ConsumerSupervisor.props(), ConsumerSupervisor.name)
+  val statisticsSupervisor = system.actorOf(StatisticsSupervisor.props(), StatisticsSupervisor.name)
 
   // dead letter checker just for test now
   val deadLetterChecker = system.actorOf(DeadLettersChecker.props())

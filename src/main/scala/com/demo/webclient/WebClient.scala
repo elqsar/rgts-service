@@ -12,7 +12,34 @@ object WebClient {
 
   def get(url: String): Future[Response] = {
     val promise = Promise[Response]()
-    val handler = new AsyncCompletionHandler[Response] {
+    val handler = createHandler(promise)
+    client.prepareGet(baseUrl + url).execute(handler)
+    promise.future
+  }
+
+  def post(url: String, body: String): Future[Response] = {
+    val promise = Promise[Response]()
+    val handler = createHandler(promise)
+    client.preparePost(baseUrl + url)
+      .setBody(body)
+      .setHeader("Content-Type", "application/json")
+      .execute(handler)
+    promise.future
+  }
+
+  def put(url: String, body: String): Future[Response] = {
+    val promise = Promise[Response]()
+    val handler = createHandler(promise)
+    client.preparePut(baseUrl + url)
+      .setBody(body)
+      .setHeader("Content-Type", "application/json")
+      .execute(handler)
+
+    promise.future
+  }
+
+  private def createHandler(promise: Promise[Response]): AsyncCompletionHandler[Response] = {
+    new AsyncCompletionHandler[Response] {
       override def onCompleted(response: Response): Response = {
         promise.success(response)
         response
@@ -22,8 +49,6 @@ object WebClient {
         promise.failure(t)
       }
     }
-    client.prepareGet(baseUrl + url).execute(handler)
-    promise.future
   }
 }
 

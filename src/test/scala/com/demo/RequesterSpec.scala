@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import scala.concurrent.Future
 
 class RequesterSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
-with WordSpecLike with Matchers with BeforeAndAfterAll {
+  with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   def this() = this(ActorSystem("RGT-system"))
 
