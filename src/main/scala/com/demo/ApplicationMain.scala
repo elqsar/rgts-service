@@ -1,10 +1,10 @@
 package com.demo
 
-import akka.actor.{DeadLetter, ActorSystem}
+import akka.actor.{ActorSystem, DeadLetter}
 import com.demo.actors.consumer.ConsumerSupervisor
-import com.demo.actors.consumer.ConsumerSupervisor.{StopConsume, StartConsume}
 import com.demo.actors.statistics.StatisticsSupervisor
 import com.demo.actors.system.DeadLettersChecker
+import com.demo.messages.Messages.StartConsume
 
 object ApplicationMain extends App {
   //Kamon.start()

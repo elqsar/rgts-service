@@ -3,7 +3,6 @@ package com.demo.actors.sender
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
-import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.sender.exceptions.MojoApiException
 import com.demo.messages.Messages._

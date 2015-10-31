@@ -1,7 +1,5 @@
 package com.demo.messages
 
-
-import com.demo.actors.consumer.ConsumerSupervisor.RabbitQueue
 import com.demo.domain.cision.{Outlet, Contact}
 import com.demo.domain.mojo.{MojoOutlet, MojoContact}
 import com.ning.http.client.Response
@@ -41,6 +39,13 @@ object Messages {
   case class FailedResponse(metadata: RabbitMetadata, response: Response)
 
   case object CheckHealth
+
+  case object StopConsume
+  case object StartConsume
+
+  trait RabbitQueue
+  case object BatchQueue extends RabbitQueue
+  case object LiveQueue extends RabbitQueue
 
   case class FailureMessage(errorMessage: String, failure: Failure, message: Option[Any])
 

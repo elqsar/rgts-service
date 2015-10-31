@@ -2,16 +2,15 @@ package com.demo
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
 import com.demo.actors.requester.Requester
-import com.demo.actors.requester.Requester.{SuccessOutlet, SuccessContact}
-import com.demo.messages.Messages.{GetOutletRequest, GetContactRequest, RabbitMetadata}
+import com.demo.actors.requester.Requester.{SuccessContact, SuccessOutlet}
+import com.demo.messages.Messages.{BatchQueue, GetContactRequest, GetOutletRequest, RabbitMetadata}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 import scala.concurrent.Future
 
 class RequesterSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
-  with WordSpecLike with Matchers with BeforeAndAfterAll {
+with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   def this() = this(ActorSystem("RGT-system"))
 

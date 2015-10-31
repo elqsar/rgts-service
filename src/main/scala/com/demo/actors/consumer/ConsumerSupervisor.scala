@@ -2,7 +2,6 @@ package com.demo.actors.consumer
 
 import akka.actor.SupervisorStrategy._
 import akka.actor._
-import com.demo.actors.consumer.ConsumerSupervisor._
 import com.demo.actors.processor.ProcessorSupervisor
 import com.demo.configuration.Configuration
 import com.demo.messages.Messages._
@@ -82,13 +81,6 @@ class ConsumerSupervisor extends Actor with ActorLogging {
 }
 
 object ConsumerSupervisor {
-  case object StopConsume
-  case object StartConsume
-
-  trait RabbitQueue
-  case object BatchQueue extends RabbitQueue
-  case object LiveQueue extends RabbitQueue
-
   val name = "consumerSupervisor"
 
   def props() = Props(new ConsumerSupervisor)

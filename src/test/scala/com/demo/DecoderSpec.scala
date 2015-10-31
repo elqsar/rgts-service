@@ -2,13 +2,12 @@ package com.demo
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.demo.actors.consumer.ConsumerSupervisor.BatchQueue
 import com.demo.actors.processor.Decoder
 import com.demo.messages.Messages._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 class DecoderSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
-  with WordSpecLike with Matchers with BeforeAndAfterAll {
+with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   def this() = this(ActorSystem("RGT-system"))
 
