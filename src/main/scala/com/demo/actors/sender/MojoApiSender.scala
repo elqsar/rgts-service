@@ -6,7 +6,6 @@ import com.demo.actors.breaker.EndpointGuard
 import com.demo.actors.consumer.ConsumerSupervisor.{StartConsume, StopConsume}
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.sender.exceptions.MojoApiException
-import com.demo.domain.mojo.MojoContact
 import com.demo.messages.Messages._
 import com.demo.webclient.WebClient
 
@@ -22,6 +21,10 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
     case PostContactRequest(id, metadata, mojoContact) =>
       breaker.withCircuitBreaker(postContact(id, metadata, mojoContact)).pipeTo(self)
     case PostOutletRequest(id, metadata, mojoOutlet) =>
+
+    case PutContactRequest(id, metadata, mojoContact) =>
+      breaker.withCircuitBreaker(putContact(id, metadata, mojoContact)).pipeTo(self)
+    case PutOutletRequest(id, metadata, mojoOutlet) =>
 
     case SuccessResponse(metadata, response) =>
       log.info("Success response: {} with tag: {}", response.getStatusCode, metadata.deliveryTag)
@@ -45,8 +48,8 @@ class MojoApiSender extends Actor with ActorLogging with EndpointGuard {
   }
 
   def putContact(id: Long, metadata: RabbitMetadata, content: String): Future[SuccessResponse] = {
-    log.info("OUT MOJO contact: {}", content)
-    val future = WebClient.post(s"journalists/$id", content)
+    log.info("PUT MOJO contact: {}", content)
+    val future = WebClient.put(s"journalists/$id", content)
     future.map { response =>
       SuccessResponse(metadata, response)
     }.recover {

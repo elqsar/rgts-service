@@ -34,6 +34,8 @@ object Messages {
 
   case class PostContactRequest(id: Long, metadata: RabbitMetadata, contact: String)
   case class PostOutletRequest(id: Long, metadata: RabbitMetadata, outlet: String)
+  case class PutContactRequest(id: Long, metadata: RabbitMetadata, outlet: String)
+  case class PutOutletRequest(id: Long, metadata: RabbitMetadata, outlet: String)
 
   case class SuccessResponse(metadata: RabbitMetadata, response: Response)
   case class FailedResponse(metadata: RabbitMetadata, response: Response)
