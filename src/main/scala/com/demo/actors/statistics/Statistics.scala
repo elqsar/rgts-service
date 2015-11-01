@@ -6,6 +6,7 @@ import com.demo.messages.Messages.FailureMessage
 class Statistics extends Actor with ActorLogging {
   override def receive: Receive = {
     case FailureMessage(errorMessage, failure, message) =>
+      // should we try to redelivery if error is not fatal?
       // here we need to collect this info to some kind of log or journal to analyze later
       log.info("Failure: {} {}", errorMessage, failure)
   }

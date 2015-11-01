@@ -19,6 +19,10 @@ class ConsumerSupervisor extends Actor with ActorLogging {
 
   val processorSupervisor = context.actorOf(ProcessorSupervisor.props(), ProcessorSupervisor.name)
 
+  private val cisionMediaId = "x-cision-record-origin-media-id"
+  private val cisionContactId = "x-cision-record-origin-contact-id"
+  private val cisionMediaType = "x-cision-record-type"
+
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy(
     maxNrOfRetries = 5, withinTimeRange = 60.seconds) {
     case _: Exception => Restart
@@ -68,7 +72,7 @@ class ConsumerSupervisor extends Actor with ActorLogging {
   }
 
   def createRabbitMessage(envelope: Envelope, properties: BasicProperties, body: Array[Byte], queueType: RabbitQueue): RabbitMessage = {
-    val mediaType = properties.getHeaders.getOrDefault("x-cision-record-type", "Unknown").toString
+    val mediaType = properties.getHeaders.getOrDefault(cisionMediaType, "Unknown").toString
     val deliveryTag = envelope.getDeliveryTag
     val metadata = RabbitMetadata(queueType, mediaType, deliveryTag)
 

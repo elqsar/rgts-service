@@ -13,6 +13,7 @@ object Messages {
   case class RabbitMessageOutlet(metadata: RabbitMetadata, rawOutlet: Array[Byte]) extends RabbitMessage
   case class CreateRabbitMessage(consumerTag: String, envelope: Envelope, properties: BasicProperties, body: Array[Byte], queueType: RabbitQueue)
   case class ProcessAck(queue: RabbitQueue, deliveryTag: Long)
+  case class ProcessNack(queue: RabbitQueue, deliveryTag: Long, requeue: Boolean)
   case class RabbitMetadata(queueType: RabbitQueue, mediaType: String, deliveryTag: Long)
 
   case class ProcessContact(metadata: RabbitMetadata, content: JValue)
