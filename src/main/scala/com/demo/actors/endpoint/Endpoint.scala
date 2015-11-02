@@ -5,7 +5,7 @@ import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
 import com.demo.actors.routes.ActorRoutes
 import com.demo.actors.endpoint.exceptions.MojoApiException
-import com.demo.domain.mojo.MojoContact
+import com.demo.domain.mojo.{MojoOutlet, MojoContact}
 import com.demo.messages.Messages._
 import com.demo.webclient.WebClient
 import org.json4s.NoTypeHints
@@ -57,6 +57,30 @@ class Endpoint extends Actor with ActorLogging with EndpointGuard {
   def putContact(metadata: RabbitMetadata, contact: MojoContact): Future[SuccessResponse] = {
     val content = Serialization.write(contact)
     val future = WebClient.put(s"journalists/${contact.id}", content)
+    future.map { response =>
+      SuccessResponse(metadata, response)
+    }.recover {
+      case e: Throwable =>
+        log.info("API Error: {}", e.getMessage)
+        throw MojoApiException(e.getMessage)
+    }
+  }
+
+  def postOutlet(metadata: RabbitMetadata, outlet: MojoOutlet): Future[SuccessResponse] = {
+    val content = Serialization.write(outlet)
+    val future = WebClient.post(s"outlets/${outlet.id}", content)
+    future.map { response =>
+      SuccessResponse(metadata, response)
+    }.recover {
+      case e: Throwable =>
+        log.info("API Error: {}", e.getMessage)
+        throw MojoApiException(e.getMessage)
+    }
+  }
+
+  def putOutlet(metadata: RabbitMetadata, outlet: MojoOutlet): Future[SuccessResponse] = {
+    val content = Serialization.write(outlet)
+    val future = WebClient.put(s"outlets/${outlet.id}", content)
     future.map { response =>
       SuccessResponse(metadata, response)
     }.recover {

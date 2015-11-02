@@ -1,11 +1,11 @@
 package com.demo.actors.requester
 
-import akka.actor.{ActorRef, Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.pattern._
 import com.demo.actors.breaker.EndpointGuard
-import com.demo.actors.requester.Requester.{SuccessOutlet, SuccessContact}
 import com.demo.actors.endpoint.exceptions.MojoApiException
-import com.demo.messages.Messages.{DecodeMojoContact, GetContactRequest, GetOutletRequest, RabbitMetadata}
+import com.demo.actors.routes.ActorRoutes
+import com.demo.messages.Messages._
 import com.demo.webclient.WebClient
 
 import scala.concurrent.Future
@@ -24,46 +24,58 @@ class Requester(mojoDecoder: ActorRef) extends Actor with ActorLogging with Endp
     case GetContactRequest(id, metadata) =>
       breaker.withCircuitBreaker(getContact(createUrl(contactUrl, id), metadata)).pipeTo(self)
 
-    case SuccessContact(metadata, contact) =>
+    case SuccessGetContact(metadata, contact) =>
+
+    case SuccessGetOutlet(metadata, outlet) =>
+
+    case CheckHealth =>
+      checkHealth()
 
   }
 
-  def getOutlet(url: String, metadata: RabbitMetadata): Future[SuccessOutlet] = {
+  def getOutlet(url: String, metadata: RabbitMetadata): Future[SuccessGetOutlet] = {
     val future = WebClient.get(url)
 
-    future.map(response => SuccessOutlet(metadata, response.getResponseBodyAsBytes)) recover {
+    future.map(response => SuccessGetOutlet(metadata, response.getResponseBodyAsBytes)) recover {
       case t: Throwable => throw MojoApiException(t.getMessage)
     }
   }
 
-  def getContact(url: String, metadata: RabbitMetadata): Future[SuccessContact] = {
+  def getContact(url: String, metadata: RabbitMetadata): Future[SuccessGetContact] = {
     val future = WebClient.get(url)
 
-    future.map(response => SuccessContact(metadata, response.getResponseBodyAsBytes)) recover {
+    future.map(response => SuccessGetContact(metadata, response.getResponseBodyAsBytes)) recover {
       case t: Throwable => throw MojoApiException(t.getMessage)
     }
+  }
+
+  def checkHealth(): Unit = {
+    breaker.withCircuitBreaker(WebClient.get("memo-types").recover {
+      case e: Throwable =>
+        throw new Exception()
+    })
   }
 
   def createUrl(url: String, id: Long): String = s"$url/$id"
 
   override def notifyCircuitBreakerOpen(): Unit = {
-
+    log.info("Circuit breaker is opened")
+    context.actorSelection(ActorRoutes.consumerSupervisor) ! StopConsume
   }
 
   override def notifyCircuitBreakerClose(): Unit = {
-
+    log.info("Circuit breaker is closed")
+    context.actorSelection(ActorRoutes.consumerSupervisor) ! StartConsume
   }
 
   override def notifyCircuitBreakerHalfOpen(): Unit = {
-
+    log.info("Checking endpoint health")
+    self ! CheckHealth
   }
 }
 
 object Requester {
   val name = "requester"
-
-  case class SuccessContact(metadata: RabbitMetadata, body: Array[Byte])
-  case class SuccessOutlet(metadata: RabbitMetadata, body: Array[Byte])
 
   def props(mojoDecoder: ActorRef) = Props(new Requester(mojoDecoder))
 }

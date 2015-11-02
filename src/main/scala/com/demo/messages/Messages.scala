@@ -31,6 +31,9 @@ object Messages {
   case class DecodeMojoContact(metadata: RabbitMetadata, contact: MojoContact)
   case class DecodeMojoOutlet(metadata: RabbitMetadata, outlet: MojoOutlet)
 
+  case class SuccessGetContact(metadata: RabbitMetadata, body: Array[Byte])
+  case class SuccessGetOutlet(metadata: RabbitMetadata, body: Array[Byte])
+
   trait MojoRequest
   case class PostContactRequest(metadata: RabbitMetadata, contact: MojoContact) extends MojoRequest
   case class PostOutletRequest(metadata: RabbitMetadata, outlet: MojoOutlet) extends MojoRequest
