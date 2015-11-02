@@ -21,6 +21,7 @@ class Processor(mapperSupervisor: ActorRef) extends Actor with ActorLogging {
     case ProcessContact(metadata, content) =>
       val contact = content.extract[Contact]
       mapperSupervisor ! RdsReadyContact(metadata, contact)
+
     case ProcessOutlet(metadata, content) =>
       val outlet = content.extract[Outlet]
       mapperSupervisor ! RdsReadyOutlet(metadata, outlet)

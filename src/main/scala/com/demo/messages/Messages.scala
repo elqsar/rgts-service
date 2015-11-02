@@ -28,13 +28,14 @@ object Messages {
   case class GetOutletRequest(id: Long, metadata: RabbitMetadata)
   case class GetContactRequest(id: Long, metadata: RabbitMetadata)
 
-  case class EncodeContact(metadata: RabbitMetadata, contact: MojoContact)
-  case class EncodeOutlet(metadata: RabbitMetadata, outlet: MojoOutlet)
+  case class DecodeMojoContact(metadata: RabbitMetadata, contact: MojoContact)
+  case class DecodeMojoOutlet(metadata: RabbitMetadata, outlet: MojoOutlet)
 
-  case class PostContactRequest(id: Long, metadata: RabbitMetadata, contact: String)
-  case class PostOutletRequest(id: Long, metadata: RabbitMetadata, outlet: String)
-  case class PutContactRequest(id: Long, metadata: RabbitMetadata, outlet: String)
-  case class PutOutletRequest(id: Long, metadata: RabbitMetadata, outlet: String)
+  trait MojoRequest
+  case class PostContactRequest(metadata: RabbitMetadata, contact: MojoContact) extends MojoRequest
+  case class PostOutletRequest(metadata: RabbitMetadata, outlet: MojoOutlet) extends MojoRequest
+  case class PutContactRequest(metadata: RabbitMetadata, contact: MojoContact) extends MojoRequest
+  case class PutOutletRequest(metadata: RabbitMetadata, outlet: MojoOutlet) extends MojoRequest
 
   case class SuccessResponse(metadata: RabbitMetadata, response: Response)
   case class FailedResponse(metadata: RabbitMetadata, response: Response)

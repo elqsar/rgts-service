@@ -2,12 +2,12 @@ package com.demo.actors.mapper
 
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
-import com.demo.actors.sender.MojoApiSenderSupervisor
+import com.demo.actors.endpoint.{EndpointSupervisor, EndpointSupervisor$}
 import com.demo.messages.Messages.RdsReadyContact
 import scala.concurrent.duration._
 
 class MapperSupervisor extends Actor with ActorLogging {
-  val senderSupervisor = context.actorOf(MojoApiSenderSupervisor.props(), MojoApiSenderSupervisor.name)
+  val senderSupervisor = context.actorOf(EndpointSupervisor.props(), EndpointSupervisor.name)
   val mapper = context.actorOf(Mapper.props(senderSupervisor), Mapper.name)
 
   override def supervisorStrategy: SupervisorStrategy = OneForOneStrategy(

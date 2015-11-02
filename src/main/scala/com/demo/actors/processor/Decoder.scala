@@ -21,6 +21,7 @@ class Decoder(processor: ActorRef) extends Actor with ActorLogging {
     case RabbitMessageOutlet(metadata, rawOutlet) =>
       val json = toJson(rawOutlet)
       processor ! ProcessOutlet(metadata, json)
+
     case RabbitMessageContact(metadata, rawContact) =>
       val json = toJson(rawContact)
       processor ! ProcessContact(metadata, json)
